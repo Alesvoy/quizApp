@@ -1,4 +1,4 @@
-import Question from "./question";
+import Question from "./question.js";
 
 export default function Quiz(questions) {
   this.questions = questions;
