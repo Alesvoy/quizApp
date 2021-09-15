@@ -44,6 +44,30 @@ const App = (() => {
 
   const quiz = new Quiz([q1, q2, q3, q4, q5]);
 
+  const listeners = () => {
+    nextButtonEl.addEventListener("click", function () {
+      const selectedRadioElem = document.querySelector(
+        'input[name="choice"]:checked'
+      );
+      if (selectedRadioElem) {
+        const key = Number(selectedRadioElem.getAttribute("data-order"));
+        quiz.guess(key);
+        renderAll();
+      }
+    });
+
+    restartButtonEl.addEventListener("click", function () {
+      // 1. Reset the quiz
+      quiz.reset();
+      // 2. Render all
+      renderAll();
+      // 3. restore the next button
+      nextButtonEl.style.opacity = 1;
+      // 4. reset tag line
+      taglineEl.innerHTML = "Pick and option below!";
+    });
+  };
+
   const setValue = (elem, value) => {
     elem.innerHTML = value;
   };
@@ -63,8 +87,8 @@ const App = (() => {
           type="radio"
           name="choice"
           class="jabquiz__input"
+          data-order="${index}"
           id="choice${index}"
-          checked
         />
         <label for="choice${index}" class="jabquiz__label">
           <i></i>
@@ -107,9 +131,21 @@ const App = (() => {
     launch(0, currentWidth);
   };
 
+  const renderEndScreen = () => {
+    setValue(quizQuestionEl, "Great Job!");
+    setValue(taglineEl, "Complete!");
+    setValue(
+      trackerEl,
+      `Your score: ${getPercentage(quiz.score, quiz.questions.length)}%`
+    );
+    nextButtonEl.style.opacity = 0;
+    renderProgress();
+  };
+
   const renderAll = () => {
     if (quiz.hasEnded()) {
       //renderEndScreen
+      renderEndScreen();
     } else {
       // 1. render the question
       renderQuestion();
@@ -124,7 +160,9 @@ const App = (() => {
 
   return {
     renderAll: renderAll,
+    listeners: listeners,
   };
 })();
 
 App.renderAll();
+App.listeners();
